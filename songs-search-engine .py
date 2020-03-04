@@ -48,7 +48,7 @@ def stop_words_removal(lyrics):
 		array.append(combine)
 	return array 
 
-# function to return all words present in all lyrics
+
 def get_words(lyrics):
 	all_words = []
 	for(words, sentiment) in lyrics:
