@@ -1,4 +1,4 @@
-# import required packages
+
 import ast
 import nltk
 from nltk.corpus import stopwords
@@ -27,7 +27,6 @@ from nltk.corpus import words
 from nltk.corpus import wordnet as wn
 
 
-# function to create tuple cotaining only lyrics and corresponding sentiment
 def create_tuples( fileName ):
 	file_open = open(fileName)
 	file_read = file_open.read()
@@ -38,7 +37,7 @@ def create_tuples( fileName ):
 		result.append(record)
 	return result
 
-# function to remove stopwords from training lyrics
+
 def stop_words_removal(lyrics):
 	array = []
 	for i in lyrics:
@@ -56,13 +55,13 @@ def get_words(lyrics):
 		all_words.extend(words)
 	return all_words
 
-# function to find frequency distribution of all words
+
 def word_features(List_word):
 	List_word = nltk.FreqDist(List_word)
 	word_features = List_word.keys()
 	return word_features
 
-# function to extract features from words
+
 def extract_features(doc):
 	doc_words = set(doc)
 	features = {}
@@ -71,13 +70,13 @@ def extract_features(doc):
 	return features 
 
 
-# function to remove stopwords from user-history lyrics
+
 def stop_word_removal1(lyrics):
     stop = set(stopwords.words('english'))
     filtered_words = [word for word in lyrics.split() if word not in stop]
     return filtered_words
     
-# function to return list based on user-history
+
 def user_sentiment(file):
     file_open = open(file)
     file_read = file_open.read()
@@ -89,37 +88,33 @@ def user_sentiment(file):
         result_list.append(output)
     return result_list
 
-########## Training the model using training dataset  
+  
 
-# creating tuples
-# give path of file "training.txt"
-lyrics = create_tuples("C:/Users/hp/Desktop/ProjectTMLyrics/training_original.txt")
-# removing stopwords
+
+lyrics = create_tuples(".../training_original.txt")
+
 filtered_corpus = stop_words_removal(lyrics)
-# Extracting Features
+
 word_features = word_features(get_words(filtered_corpus))
-# Applying Features
+
 training_set = nltk.classify.apply_features(extract_features,filtered_corpus)
-# Training Classifier
+
 classifier = nltk.NaiveBayesClassifier.train(training_set)
 
-########## Testing the model on test dataset
 
-# creating tuples
-# give path of file "testing.txt"
-lyrics_test = create_tuples("C:/Users/hp/Desktop/ProjectTMLyrics/testing_original.txt")
-# removing stopwords
+
+
+lyrics_test = create_tuples(".../testing_original.txt")
+
 test_corpus = stop_words_removal(lyrics_test)
-# applying classifier model on test dataset
+
 test_set = nltk.classify.apply_features(extract_features,test_corpus)
 
-########  Checking Accuracy
-print ("\t" + "Accuracy of the model is:" + str(nltk.classify.accuracy(classifier, test_set)))
 
 
 def tokenise_normalise(raw_string):
 
-#tokenize and normalise a string.
+
 
 	tokenizer = RegexpTokenizer(r'\w+')
 	tokenised_text = tokenizer.tokenize(str(raw_string))
@@ -135,7 +130,7 @@ def tokenise_normalise(raw_string):
 	
 def stem(token_normalised_text):
 
-#stems a normalised tokens list.
+
 
 	processed_text = []
 	stemmer = PorterStemmer()
@@ -152,7 +147,7 @@ def stem(token_normalised_text):
 	
 def create_tf_dict_doc(processed_text, f, stats_dict):
 		
-#create a term-frequency dictionary for one document.
+
 		
 	for root in processed_text:
 	
@@ -170,7 +165,7 @@ def create_tf_dict_doc(processed_text, f, stats_dict):
 		
 def create_tf_dict_query(processed_query):
 
-#creates tf-idf scores dictionary for query.
+
 	query_dict = {}
 	for root in processed_query:
 		
@@ -185,7 +180,7 @@ def create_tf_dict_query(processed_query):
 		
 def find_tfidf_doc(stats_dict, Number_of_docs):
 
-#find idf scores for terms and update the tf-idf values in dictionary.
+
 	
 	idf_dict = {}
 	for word in stats_dict:
@@ -199,7 +194,7 @@ def find_tfidf_doc(stats_dict, Number_of_docs):
 	
 def find_tfidf_query(query_dict, idf_dict, Number_of_docs):
 
-#find tf-idf scores for terms in query and returns a dictionary.
+
 
 	for word in query_dict:
 		query_dict[word] = (1 + math.log(query_dict[word]))*math.log(Number_of_docs/idf_dict[word])
@@ -208,7 +203,7 @@ def find_tfidf_query(query_dict, idf_dict, Number_of_docs):
 
 
 def spell_check(string):
-#checks the spelling mistakes for each word and returns suggestions.
+
 	checker = words.words()
 	error_dict = {}
 	
@@ -222,7 +217,7 @@ def spell_check(string):
 
 
 def synonym_list(processed_query):
-#returns final query after adding relevant synonyms.
+.
 	final_query_words = []
 	for w in processed_query:
 	
@@ -249,7 +244,7 @@ def sentiment(output):
 def searchQuery(query,text_files,stats_dict,Number_of_docs,doc_list,idf_dict,list_of_words):
 	''' searches the query in stats_dict'''
 
-	processed_query = tokenise_normalise(query)#normalising the query
+	processed_query = tokenise_normalise(query)
 	output = classifier.classify(extract_features(processed_query))
 
 	
@@ -268,9 +263,9 @@ def searchQuery(query,text_files,stats_dict,Number_of_docs,doc_list,idf_dict,lis
 
 		
 
-	final_query = synonym_list(processed_query)#adding most relevant synonyms to the query list
+	final_query = synonym_list(processed_query)
 
-	final_query = stem(final_query)#stemming the query
+	final_query = stem(final_query)
     
 	
 	
@@ -280,11 +275,11 @@ def searchQuery(query,text_files,stats_dict,Number_of_docs,doc_list,idf_dict,lis
 
 	final_query = [x for x in final_query if x in stats_dict]
 	if final_query!=[]:
-		#print final_query
 		
-		query_dict = create_tf_dict_query(final_query) #finding tf scores for each query word
+		
+		query_dict = create_tf_dict_query(final_query) 
 
-		query_dict = find_tfidf_query(query_dict, idf_dict, Number_of_docs) #find tf-idf scores for each query word
+		query_dict = find_tfidf_query(query_dict, idf_dict, Number_of_docs)
 		
 		vector_array = np.zeros((len(query_dict.keys()), Number_of_docs))
 
@@ -294,7 +289,7 @@ def searchQuery(query,text_files,stats_dict,Number_of_docs,doc_list,idf_dict,lis
 		query_vector = np.zeros((1, len(query_dict.keys())))
 
 		for w in query_dict:
-		#create tf-idf vector for each document for each word in query
+		
 			query_vector[0][i] = query_dict[w]
 			for d in doc_list:
 				if d not in stats_dict[w]:
@@ -305,17 +300,17 @@ def searchQuery(query,text_files,stats_dict,Number_of_docs,doc_list,idf_dict,lis
 			i += 1
 			j = 0
 	
-		magnitude = np.linalg.norm(vector_array, axis = 0)#changing the document vectors to unit vectors.
+		magnitude = np.linalg.norm(vector_array, axis = 0)
 		vector_array = np.divide(vector_array, magnitude)
 		vector_array[np.isnan(vector_array)] = 0
 
-		q_magnitude = np.linalg.norm(query_vector, axis = 1)#changing the query vector to unit vector
+		q_magnitude = np.linalg.norm(query_vector, axis = 1)
 		query_vector = np.divide(query_vector, q_magnitude)
 
-		dot_product = np.dot(query_vector, vector_array) #finding the dot product of each document vector with query vector.
+		dot_product = np.dot(query_vector, vector_array) 
 		dot_product = dot_product.tolist()
 
-		final_rank = list(zip(dot_product[0], doc_list))#sorting the cosine scores to rank the documents.
+		final_rank = list(zip(dot_product[0], doc_list))
 		final_rank.sort(reverse = True)
 		searchf=Tk()
 		searchf.wm_title(query +" "+'Systeme de recherche Information')
@@ -332,22 +327,17 @@ def searchQuery(query,text_files,stats_dict,Number_of_docs,doc_list,idf_dict,lis
 			labl.bind("<Button-1>", callbacks)
 			labl.pack()
 			
-	else :messagebox.showinfo( "!!", "Désolé aucun résultat trouvé", icon='warning')#if query is empty, print error message.
+	else :messagebox.showinfo( "!!", "Désolé aucun résultat trouvé", icon='warning')
 
 
         
-corpus_dir="C:/Users/hp/Desktop/ProjectTMLyrics/corpus"   
+corpus_dir=".../corpus"   
 
 top = Tk()
 top.wm_title("Moteur de racherche & Analyse du sentiment")
 
-#f = Frame(top, width=600,height=350)
 
-#canvas=Canvas(top,width=600,height=350)
-#image=ImageTk.PhotoImage(Image.open("C:\\Users\\hp\\Desktop\\ProjectTMLyrics\\back.jpg"))
-#canvas.create_image(0,0,anchor=NW,image=image)
-#f.configure(bg="red")
-photo = PhotoImage(file="C:\\Users\\hp\\Desktop\\ProjectTMLyrics\\back3.png")
+photo = PhotoImage(file="...\\back3.png")
 f = Canvas(top, width=photo.width(), height=photo.height(), bg="yellow")
 f.create_image(0, 0, anchor=NW, image=photo)
 f.pack()
@@ -356,17 +346,17 @@ e1.insert(END, 'Veuillez Entrer votre recherche')
 e1.place(relx=0.5, rely=0.35, anchor=CENTER,height=35, width=520)
 output=classifier.classify(extract_features(tokenise_normalise(e1.get())))
 if output=='P':
-    result = "C:/Users/hp/Desktop/ProjectTMLyrics/Positif"
+    result = ".../Positif"
 else :
-    result = "C:/Users/hp/Desktop/ProjectTMLyrics/Negatif"
+    result = ".../Negatif"
 text_files = [os.path.join(corpus_dir, f) for f in os.listdir(corpus_dir)]
 stats_dict = {}
 
-Number_of_docs = len(text_files)	#getting number of docs
+Number_of_docs = len(text_files)	
 
 doc_list = []
 
-for f in text_files:	#reading each doc
+for f in text_files:	
 	doc = open(f, 'r')
 	lines = [l.strip() for l in doc.readlines()]
 
@@ -383,7 +373,7 @@ for f in text_files:	#reading each doc
 	#tokenising and stemming text
 	processed_text = tokenise_normalise(full_transcript)
 	processed_text = stem(processed_text)
-	stats_dict = create_tf_dict_doc(processed_text, f, stats_dict)#creating tf dictionary
+	stats_dict = create_tf_dict_doc(processed_text, f, stats_dict)
 	doc_list.append(f)
 
 
@@ -395,8 +385,8 @@ doc_list.sort()
 
 
 
-photoSearch = PhotoImage(file = r"C:\\Users\\hp\\Desktop\\ProjectTMLyrics\\search.png") 
-photoQuitter = PhotoImage(file = r"C:\\Users\\hp\\Desktop\\ProjectTMLyrics\\quitter.png")  
+photoSearch = PhotoImage(file = r"...\\search.png") 
+photoQuitter = PhotoImage(file = r"...\\quitter.png")  
 # Resizing image to fit on button 
 photoimage = photoSearch.subsample(5, 5) 
 photoimageQ = photoQuitter.subsample(10,10) 
